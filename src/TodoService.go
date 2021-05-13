@@ -2,8 +2,9 @@ package src
 
 var (
 	customTodo = Todo{
-		Name:        "Test Todo",
-		Description: "Test Todo",
+		Id:          "Non existing todo",
+		Name:        "Non existing todo",
+		Description: "Non existing todo",
 		Done:        false,
 	}
 )
@@ -11,9 +12,20 @@ var (
 var todos []Todo
 
 func FindAll() []Todo {
-	return []Todo{customTodo, customTodo, customTodo}
+	return todos
 }
 
-func FindById(todoID uint) Todo {
+func FindById(todoID string) Todo {
+	for _, todo := range todos {
+		if todo.Id == todoID {
+			return todo
+		}
+	}
+
 	return customTodo
+}
+
+func CreateTodo(createdTodo Todo) {
+	todos = append(todos, createdTodo)
+	return
 }

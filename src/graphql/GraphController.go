@@ -7,8 +7,8 @@ import (
 )
 
 var schema, _ = graphql.NewSchema(graphql.SchemaConfig{
-	Query: rootQuery,
-	//Mutation: rootMutation,
+	Query:    rootQuery,
+	Mutation: rootMutation,
 })
 
 var GraphHandler = handler.New(&handler.Config{

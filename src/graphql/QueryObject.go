@@ -20,15 +20,15 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 			Description: "Get todo by ID",
 			Args: graphql.FieldConfigArgument{
 				"id": &graphql.ArgumentConfig{
-					Type: graphql.Int,
+					Type: graphql.String,
 				},
 			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				id, success := params.Args["id"].(int)
+				id, success := params.Args["id"].(string)
 				if success {
-					return src.FindById(uint(id)), nil
+					return src.FindById(id), nil
 				}
-				return nil, nil
+				return src.FindById(id), nil
 			},
 		},
 		"done": &graphql.Field{
@@ -40,9 +40,9 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				id, success := params.Args["id"].(int)
+				id, success := params.Args["id"].(string)
 				if success {
-					return src.FindById(uint(id)), nil
+					return src.FindById(id), nil
 				}
 				return nil, nil
 			},
@@ -54,7 +54,7 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 //Need to define field
 var todoField = graphql.NewObject(
 	graphql.ObjectConfig{
-		Name: "Exercise",
+		Name: "Todo",
 		Fields: graphql.Fields{
 			"id": &graphql.Field{
 				Type: graphql.Int,
