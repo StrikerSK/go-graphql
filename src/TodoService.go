@@ -15,14 +15,14 @@ func FindAll() []Todo {
 	return todos
 }
 
-func FindById(todoID string) Todo {
+func FindById(todoID string) (Todo, bool) {
 	for _, todo := range todos {
 		if todo.Id == todoID {
-			return todo
+			return todo, true
 		}
 	}
 
-	return customTodo
+	return customTodo, false
 }
 
 func CreateTodo(createdTodo Todo) {

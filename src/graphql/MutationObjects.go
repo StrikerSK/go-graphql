@@ -11,7 +11,7 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 	Fields: graphql.Fields{
 		"createTodo": &graphql.Field{
 			Type:        graphql.String,
-			Description: "Create exercise max",
+			Description: "Create todo",
 			Args: graphql.FieldConfigArgument{
 				"name": &graphql.ArgumentConfig{
 					Type: graphql.NewNonNull(graphql.String),
@@ -33,6 +33,20 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 
 				src.CreateTodo(createTodo)
 				return todoId, nil
+			},
+		},
+		"deleteTodo": &graphql.Field{
+			Type:        graphql.Boolean,
+			Description: "Delete todo",
+			Args: graphql.FieldConfigArgument{
+				"id": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.String),
+				},
+			},
+			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+				todoId, _ := params.Args["id"].(string)
+				_, present := src.FindById(todoId)
+				return present, nil
 			},
 		},
 	},

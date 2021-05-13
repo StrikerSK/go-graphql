@@ -24,11 +24,12 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				id, success := params.Args["id"].(string)
+				todoId, success := params.Args["id"].(string)
+				todo, _ := src.FindById(todoId)
 				if success {
-					return src.FindById(id), nil
+					return todo, nil
 				}
-				return src.FindById(id), nil
+				return todo, nil
 			},
 		},
 		"done": &graphql.Field{
@@ -40,11 +41,12 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				id, success := params.Args["id"].(string)
+				todoId, success := params.Args["id"].(string)
+				todo, _ := src.FindById(todoId)
 				if success {
-					return src.FindById(id), nil
+					return todo, nil
 				}
-				return nil, nil
+				return todo, nil
 			},
 		},
 	},
