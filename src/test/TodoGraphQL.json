@@ -1,0 +1,195 @@
+{
+	"info": {
+		"_postman_id": "a6bc9185-76c1-4dfe-8fdb-622cf79b38c8",
+		"name": "Todo GraphQL",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GraphQL - List all Todos",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query {\r\n  todos {\r\n    name,\r\n    id,\r\n    description,\r\n    done\r\n  }\r\n}\r\n",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "{{HOST_URL}}/graphql",
+					"host": [
+						"{{HOST_URL}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GraphQL - Create Todo",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"TODO_ID\", pm.response.json().data.createTodo);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation {\n    createTodo (\n        name: \"Created todo\",\n        description: \"Created todo desc\"\n    )\n}",
+						"variables": "{\n    \"name\": \"Create todo\",\n    \"description\": \"Create todo\"\n}"
+					}
+				},
+				"url": {
+					"raw": "{{HOST_URL}}/graphql",
+					"host": [
+						"{{HOST_URL}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GraphQL - Update Todo",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"TODO_ID\", pm.response.json().data.createTodo);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation {\n    updateTodo (\n        id: \"3920b364-b41f-11eb-8fb5-1e00ea3e1d7a\"\n        name: \"Updated todo\",\n        description: \"Updated todo desc\"\n    )\n}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "{{HOST_URL}}/graphql",
+					"host": [
+						"{{HOST_URL}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GraphQL - Delete Todo",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"TODO_ID\", pm.response.json().data.createTodo);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation {\n    deleteTodo (\n        id: \"3d8e4324-b41c-11eb-a2a3-1e00ea3e1d5a\"\n    )\n}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "{{HOST_URL}}/graphql",
+					"host": [
+						"{{HOST_URL}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GraphQL - Get Todo by ID",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query todo ($id: String!) {\r\n    todo (id: $id) {\r\n        name\r\n        description\r\n        done\r\n    }\r\n}",
+						"variables": "{\n    \"id\": \"13f39998-b41b-11eb-bfa5-1e00ea3e1d7a\"\n}"
+					}
+				},
+				"url": {
+					"raw": "{{HOST_URL}}/graphql",
+					"host": [
+						"{{HOST_URL}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "HOST_URL",
+			"value": "localhost:5000"
+		},
+		{
+			"key": "TODO_ID",
+			"value": ""
+		}
+	]
+}
