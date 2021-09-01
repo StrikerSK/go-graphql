@@ -2,7 +2,7 @@ package graphql
 
 import (
 	"github.com/graphql-go/graphql"
-	"github.com/strikersk/go-graphql/src"
+	"github.com/strikersk/go-graphql/src/observer"
 )
 
 var rootQuery = graphql.NewObject(graphql.ObjectConfig{
@@ -12,7 +12,8 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.NewList(todoField),
 			Description: "Read all todos",
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				return src.FindAll(), nil
+				todos := observer.GetObserverInstance().FindAll()
+				return todos, nil
 			},
 		},
 		"todo": &graphql.Field{
@@ -25,7 +26,7 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 				todoId, success := params.Args["id"].(string)
-				todo, _ := src.FindById(todoId)
+				todo, _ := observer.GetObserverInstance().FindByID(todoId)
 				if success {
 					return todo, nil
 				}
@@ -42,7 +43,7 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 				todoId, success := params.Args["id"].(string)
-				todo, _ := src.FindById(todoId)
+				todo, _ := observer.GetObserverInstance().FindByID(todoId)
 				if success {
 					return todo, nil
 				}
@@ -59,7 +60,7 @@ var todoField = graphql.NewObject(
 		Name: "Todo",
 		Fields: graphql.Fields{
 			"id": &graphql.Field{
-				Type: graphql.Int,
+				Type: graphql.String,
 			},
 			"name": &graphql.Field{
 				Type: graphql.String,

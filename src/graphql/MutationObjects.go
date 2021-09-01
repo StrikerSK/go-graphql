@@ -3,7 +3,10 @@ package graphql
 import (
 	"github.com/google/uuid"
 	"github.com/graphql-go/graphql"
+	"github.com/mitchellh/mapstructure"
 	"github.com/strikersk/go-graphql/src"
+	"github.com/strikersk/go-graphql/src/observer"
+	"log"
 )
 
 var rootMutation = graphql.NewObject(graphql.ObjectConfig{
@@ -21,17 +24,15 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				todoName, _ := params.Args["name"].(string)
-				todoDescription, _ := params.Args["description"].(string)
 				todoId, _ := uuid.NewUUID()
 
-				createTodo := src.Todo{
-					Id:          todoId.String(),
-					Name:        todoName,
-					Description: todoDescription,
+				var newTodo src.Todo
+				if err := mapstructure.Decode(params.Args, &newTodo); err != nil {
+					log.Printf("GraphQL Create Todo: %v\n", err)
+					return nil, err
 				}
 
-				src.CreateTodo(createTodo)
+				_ = observer.GetObserverInstance().CreateData(newTodo)
 				return todoId, nil
 			},
 		},
@@ -53,20 +54,17 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				todoName, _ := params.Args["name"].(string)
-				todoDescription, _ := params.Args["description"].(string)
-				todoId, _ := params.Args["id"].(string)
-				todoDone, _ := params.Args["done"].(bool)
-
-				updatedTodo := src.Todo{
-					Id:          todoId,
-					Name:        todoName,
-					Description: todoDescription,
-					Done:        todoDone,
+				var newTodo src.Todo
+				if err := mapstructure.Decode(params.Args, &newTodo); err != nil {
+					log.Printf("GraphQL Update Todo: %v\n", err)
+					return nil, err
 				}
 
-				src.UpdateTodo(updatedTodo)
-				return nil, nil
+				if err := observer.GetObserverInstance().UpdateData(newTodo.Id, newTodo); err != nil {
+					return nil, err
+				}
+
+				return "Todo updated", nil
 			},
 		},
 		"deleteTodo": &graphql.Field{
@@ -78,9 +76,7 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				todoId, _ := params.Args["id"].(string)
-				_, present := src.FindById(todoId)
-				return present, nil
+				return true, nil
 			},
 		},
 	},

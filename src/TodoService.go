@@ -1,6 +1,12 @@
 package src
 
-import "log"
+import (
+	"errors"
+	"github.com/google/uuid"
+	"log"
+)
+
+const ServiceName = "TodoService"
 
 var (
 	customTodo = Todo{
@@ -11,42 +17,70 @@ var (
 	}
 )
 
-var todos []Todo
-
-func FindAll() []Todo {
-	return todos
+type TodoService struct {
+	todos []Todo
 }
 
-func FindById(todoID string) (Todo, bool) {
-	todoIndex, present := findTodoIndex(todoID)
+func (t *TodoService) GetName() string {
+	return ServiceName
+}
+
+func (t *TodoService) FindAll() interface{} {
+	return t.todos
+}
+
+func (t *TodoService) FindByID(todoID interface{}) (interface{}, error) {
+	todoIndex, present := t.findTodoIndex(todoID.(string))
 
 	if !present {
 		log.Printf("Cannot find todo with id %s\n", todoID)
-		return customTodo, present
+		return customTodo, nil
 	}
 
-	return todos[todoIndex], present
+	return t.todos[todoIndex], nil
 }
 
-func CreateTodo(createdTodo Todo) {
-	todos = append(todos, createdTodo)
-	return
+func (t *TodoService) CreateData(input interface{}) error {
+	todo, ok := input.(Todo)
+	if !ok {
+		return errors.New("input is not of type Todo")
+	}
+
+	if todo.Id == "" {
+		todo.Id = uuid.NewString()
+	}
+
+	t.todos = append(t.todos, todo)
+	return nil
 }
 
-func UpdateTodo(updatedTodo Todo) {
-	todoIndex, present := findTodoIndex(updatedTodo.Id)
+func (t *TodoService) UpdateData(id interface{}, input interface{}) error {
+	todoIndex, present := t.findTodoIndex(id.(string))
 
 	if !present {
-		log.Printf("Cannot update todo with id %s\n", updatedTodo.Id)
-		return
+		log.Printf("Todo [%s] update: value not found\n", id)
+		return errors.New("value not found")
 	}
 
-	todos[todoIndex] = updatedTodo
-	return
+	t.todos[todoIndex] = input.(Todo)
+	return nil
 }
 
-func findTodoIndex(todoID string) (int, bool) {
-	for index, todo := range todos {
+func (t *TodoService) DeleteData(input interface{}) error {
+	var filteredTodos []Todo
+
+	for _, item := range t.todos {
+		if item.Id != input {
+			filteredTodos = append(filteredTodos, item)
+		}
+	}
+
+	t.todos = filteredTodos
+	return nil
+}
+
+func (t *TodoService) findTodoIndex(todoID string) (int, bool) {
+	for index, todo := range t.todos {
 		if todo.Id == todoID {
 			return index, true
 		}
