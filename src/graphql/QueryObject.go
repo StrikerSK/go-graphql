@@ -12,7 +12,11 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 			Type:        graphql.NewList(todoField),
 			Description: "Read all todos",
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				todos := observer.GetObserverInstance().FindAll()
+				todos, err := observer.GetObserverInstance().FindAll()
+				if err != nil {
+					return nil, err
+				}
+
 				return todos, nil
 			},
 		},

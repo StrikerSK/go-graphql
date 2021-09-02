@@ -8,15 +8,6 @@ import (
 
 const ServiceName = "TodoService"
 
-var (
-	customTodo = Todo{
-		Id:          "Non existing todo",
-		Name:        "Non existing todo",
-		Description: "Non existing todo",
-		Done:        false,
-	}
-)
-
 type TodoService struct {
 	todos []Todo
 }
@@ -25,16 +16,15 @@ func (t *TodoService) GetName() string {
 	return ServiceName
 }
 
-func (t *TodoService) FindAll() interface{} {
-	return t.todos
+func (t *TodoService) FindAll() (interface{}, error) {
+	return t.todos, nil
 }
 
 func (t *TodoService) FindByID(todoID interface{}) (interface{}, error) {
-	todoIndex, present := t.findTodoIndex(todoID.(string))
-
-	if !present {
-		log.Printf("Cannot find todo with id %s\n", todoID)
-		return customTodo, nil
+	todoIndex, err := t.findTodoIndex(todoID.(string))
+	if err != nil {
+		log.Printf("Todo [%s] read: %v\n", todoID, err)
+		return nil, err
 	}
 
 	return t.todos[todoIndex], nil
@@ -54,12 +44,17 @@ func (t *TodoService) CreateData(input interface{}) error {
 	return nil
 }
 
-func (t *TodoService) UpdateData(id interface{}, input interface{}) error {
-	todoIndex, present := t.findTodoIndex(id.(string))
+func (t *TodoService) UpdateData(input interface{}) error {
+	todo, ok := input.(Todo)
+	if !ok {
+		return errors.New("interface is not of type Todo")
+	}
 
-	if !present {
-		log.Printf("Todo [%s] update: value not found\n", id)
-		return errors.New("value not found")
+	todoIndex, err := t.findTodoIndex(todo.Id)
+
+	if err != nil {
+		log.Printf("Todo [%s] update: %v\n", todo.Id, err)
+		return err
 	}
 
 	t.todos[todoIndex] = input.(Todo)
@@ -79,12 +74,12 @@ func (t *TodoService) DeleteData(input interface{}) error {
 	return nil
 }
 
-func (t *TodoService) findTodoIndex(todoID string) (int, bool) {
+func (t *TodoService) findTodoIndex(todoID string) (int, error) {
 	for index, todo := range t.todos {
 		if todo.Id == todoID {
-			return index, true
+			return index, nil
 		}
 	}
 
-	return 0, false
+	return 0, errors.New("data not found")
 }

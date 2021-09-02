@@ -2,9 +2,9 @@ package observer
 
 type ServiceObserver interface {
 	GetName() string
-	FindAll() interface{}
+	FindAll() (interface{}, error)
 	FindByID(id interface{}) (interface{}, error)
 	CreateData(input interface{}) error
-	UpdateData(id interface{}, input interface{}) error
+	UpdateData(input interface{}) error
 	DeleteData(id interface{}) error
 }

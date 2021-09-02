@@ -1,29 +1,33 @@
 package observer
 
-import "github.com/strikersk/go-graphql/src"
-
 type CustomObserver struct {
-	Observers []ServiceObserver
+	observers   []ServiceObserver
+	mainService string
+}
+
+// Main Service name will be needed to use in case only one service is needed
+func (co *CustomObserver) SetMainService(newMain string) {
+	co.mainService = newMain
 }
 
 func (co *CustomObserver) Register(newObserver ServiceObserver) {
-	co.Observers = append(co.Observers, newObserver)
+	co.observers = append(co.observers, newObserver)
 }
 
 func (co *CustomObserver) Unregister(observerName string) {
 	var filteredObservers []ServiceObserver
 
-	for _, item := range co.Observers {
+	for _, item := range co.observers {
 		if item.GetName() != observerName {
 			filteredObservers = append(filteredObservers, item)
 		}
 	}
 
-	co.Observers = filteredObservers
+	co.observers = filteredObservers
 }
 
 func (co *CustomObserver) CreateData(input interface{}) error {
-	for _, item := range co.Observers {
+	for _, item := range co.observers {
 		if err := item.CreateData(input); err != nil {
 			return err
 		}
@@ -32,9 +36,9 @@ func (co *CustomObserver) CreateData(input interface{}) error {
 	return nil
 }
 
-func (co *CustomObserver) UpdateData(id interface{}, input interface{}) error {
-	for _, item := range co.Observers {
-		if err := item.UpdateData(id, input); err != nil {
+func (co *CustomObserver) UpdateData(input interface{}) error {
+	for _, item := range co.observers {
+		if err := item.UpdateData(input); err != nil {
 			return err
 		}
 	}
@@ -43,7 +47,7 @@ func (co *CustomObserver) UpdateData(id interface{}, input interface{}) error {
 }
 
 func (co *CustomObserver) DeleteData(id interface{}) error {
-	for _, item := range co.Observers {
+	for _, item := range co.observers {
 		if err := item.DeleteData(id); err != nil {
 			return err
 		}
@@ -52,10 +56,10 @@ func (co *CustomObserver) DeleteData(id interface{}) error {
 	return nil
 }
 
-func (co *CustomObserver) FindAll() (result interface{}) {
-	for _, item := range co.Observers {
-		if item.GetName() == src.ServiceName {
-			result = item.FindAll()
+func (co *CustomObserver) FindAll() (result interface{}, err error) {
+	for _, item := range co.observers {
+		if item.GetName() == co.mainService {
+			result, err = item.FindAll()
 			break
 		}
 	}
@@ -64,8 +68,8 @@ func (co *CustomObserver) FindAll() (result interface{}) {
 }
 
 func (co *CustomObserver) FindByID(id interface{}) (result interface{}, err error) {
-	for _, item := range co.Observers {
-		if item.GetName() == src.ServiceName {
+	for _, item := range co.observers {
+		if item.GetName() == co.mainService {
 			result, err = item.FindByID(id)
 			break
 		}

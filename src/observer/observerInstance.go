@@ -21,7 +21,11 @@ func GetObserverInstance() *CustomObserver {
 			log.Println("Creating Observer instance")
 
 			tempInstance := CustomObserver{}
+
+			//Set TodoService also as main service for observer
 			tempInstance.Register(&src.TodoService{})
+			tempInstance.SetMainService(src.ServiceName)
+
 			tempInstance.Register(&src.LoggingTodoService{})
 
 			log.Println("Observer initialization: created")

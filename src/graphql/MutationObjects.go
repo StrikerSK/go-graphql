@@ -24,29 +24,31 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				todoId, _ := uuid.NewUUID()
-
 				var newTodo src.Todo
 				if err := mapstructure.Decode(params.Args, &newTodo); err != nil {
 					log.Printf("GraphQL Create Todo: %v\n", err)
 					return nil, err
 				}
+				newTodo.Id = uuid.NewString()
 
-				_ = observer.GetObserverInstance().CreateData(newTodo)
-				return todoId, nil
+				if err := observer.GetObserverInstance().CreateData(newTodo); err != nil {
+					return nil, err
+				}
+
+				return newTodo.Id, nil
 			},
 		},
 		"updateTodo": &graphql.Field{
 			Type:        graphql.String,
-			Description: "Create todo",
+			Description: "Update todo",
 			Args: graphql.FieldConfigArgument{
+				"id": &graphql.ArgumentConfig{
+					Type: graphql.NewNonNull(graphql.String),
+				},
 				"name": &graphql.ArgumentConfig{
 					Type: graphql.NewNonNull(graphql.String),
 				},
 				"description": &graphql.ArgumentConfig{
-					Type: graphql.String,
-				},
-				"id": &graphql.ArgumentConfig{
 					Type: graphql.String,
 				},
 				"done": &graphql.ArgumentConfig{
@@ -60,7 +62,7 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 					return nil, err
 				}
 
-				if err := observer.GetObserverInstance().UpdateData(newTodo.Id, newTodo); err != nil {
+				if err := observer.GetObserverInstance().UpdateData(newTodo); err != nil {
 					return nil, err
 				}
 
@@ -76,6 +78,12 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+				todoID := params.Args["id"].(string)
+
+				if err := observer.GetObserverInstance().DeleteData(todoID); err != nil {
+					return false, err
+				}
+
 				return true, nil
 			},
 		},
