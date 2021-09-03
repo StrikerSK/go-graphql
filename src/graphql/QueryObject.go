@@ -3,10 +3,11 @@ package graphql
 import (
 	"github.com/graphql-go/graphql"
 	"github.com/strikersk/go-graphql/src/observer"
+	"github.com/strikersk/go-graphql/src/types"
 )
 
 var rootQuery = graphql.NewObject(graphql.ObjectConfig{
-	Name: "RootQuery",
+	Name: "query",
 	Fields: graphql.Fields{
 		"todos": &graphql.Field{
 			Type:        graphql.NewList(todoField),
@@ -37,21 +38,24 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 				return todo, nil
 			},
 		},
-		"done": &graphql.Field{
-			Type:        todoField,
-			Description: "Get todo by ID",
-			Args: graphql.FieldConfigArgument{
-				"id": &graphql.ArgumentConfig{
-					Type: graphql.Int,
-				},
-			},
+		"getDone": &graphql.Field{
+			Type:        graphql.NewList(todoField),
+			Description: "Get every done todos",
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				todoId, success := params.Args["id"].(string)
-				todo, _ := observer.GetObserverInstance().FindByID(todoId)
-				if success {
-					return todo, nil
+				data, err := observer.GetObserverInstance().FindAll()
+				if err != nil {
+					return nil, err
 				}
-				return todo, nil
+
+				var filteredTodos []types.Todo
+				todos := data.([]types.Todo)
+				for _, todo := range todos {
+					if todo.Done {
+						filteredTodos = append(filteredTodos, todo)
+					}
+				}
+
+				return filteredTodos, nil
 			},
 		},
 	},
@@ -68,9 +72,32 @@ var todoField = graphql.NewObject(
 			},
 			"name": &graphql.Field{
 				Type: graphql.String,
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					todo := p.Source.(types.Todo)
+					return todo.Name, nil
+				},
 			},
 			"description": &graphql.Field{
 				Type: graphql.String,
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					todo := p.Source.(types.Todo)
+					return todo.Description, nil
+				},
+			},
+			"subTasks": &graphql.Field{
+				Type: graphql.NewList(graphql.NewObject(
+					graphql.ObjectConfig{
+						Name: "subTasks",
+						Fields: graphql.Fields{
+							"name": &graphql.Field{
+								Type: graphql.String,
+							},
+							"description": &graphql.Field{
+								Type: graphql.String,
+							},
+						},
+					},
+				)),
 			},
 			"done": &graphql.Field{
 				Type: graphql.Boolean,

@@ -1,6 +1,7 @@
-package src
+package service
 
 import (
+	"github.com/strikersk/go-graphql/src/types"
 	"log"
 )
 
@@ -26,7 +27,7 @@ func (t *LoggingTodoService) CreateData(input interface{}) error {
 }
 
 func (t *LoggingTodoService) UpdateData(input interface{}) error {
-	todo := input.(Todo)
+	todo := input.(types.Todo)
 	log.Println("User requested updating Todo with ID: ", todo.Id, " with Data: ", todo)
 	return nil
 }

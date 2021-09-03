@@ -4,13 +4,13 @@ import (
 	"github.com/google/uuid"
 	"github.com/graphql-go/graphql"
 	"github.com/mitchellh/mapstructure"
-	"github.com/strikersk/go-graphql/src"
 	"github.com/strikersk/go-graphql/src/observer"
+	"github.com/strikersk/go-graphql/src/types"
 	"log"
 )
 
 var rootMutation = graphql.NewObject(graphql.ObjectConfig{
-	Name: "RootMutation",
+	Name: "mutation",
 	Fields: graphql.Fields{
 		"createTodo": &graphql.Field{
 			Type:        graphql.String,
@@ -22,15 +22,18 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				"description": &graphql.ArgumentConfig{
 					Type: graphql.String,
 				},
+				"subTasks": &graphql.ArgumentConfig{
+					Type: graphql.NewList(subTaskObject),
+				},
 			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				var newTodo src.Todo
+				var newTodo types.Todo
 				if err := mapstructure.Decode(params.Args, &newTodo); err != nil {
 					log.Printf("GraphQL Create Todo: %v\n", err)
 					return nil, err
 				}
-				newTodo.Id = uuid.NewString()
 
+				newTodo.Id = uuid.NewString()
 				if err := observer.GetObserverInstance().CreateData(newTodo); err != nil {
 					return nil, err
 				}
@@ -51,12 +54,15 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 				"description": &graphql.ArgumentConfig{
 					Type: graphql.String,
 				},
+				"subTasks": &graphql.ArgumentConfig{
+					Type: graphql.NewList(subTaskObject),
+				},
 				"done": &graphql.ArgumentConfig{
 					Type: graphql.Boolean,
 				},
 			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-				var newTodo src.Todo
+				var newTodo types.Todo
 				if err := mapstructure.Decode(params.Args, &newTodo); err != nil {
 					log.Printf("GraphQL Update Todo: %v\n", err)
 					return nil, err
@@ -89,3 +95,18 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 		},
 	},
 })
+
+//GraphQL's object for inputting nested structure
+var subTaskObject = graphql.NewInputObject(
+	graphql.InputObjectConfig{
+		Name: "subTasks",
+		Fields: graphql.InputObjectConfigFieldMap{
+			"name": &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
+			"description": &graphql.InputObjectFieldConfig{
+				Type: graphql.String,
+			},
+		},
+	},
+)

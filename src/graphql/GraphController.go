@@ -12,8 +12,9 @@ var schema, _ = graphql.NewSchema(graphql.SchemaConfig{
 })
 
 var GraphHandler = handler.New(&handler.Config{
-	Schema: &schema,
-	Pretty: true,
+	Schema:   &schema,
+	Pretty:   true,
+	GraphiQL: true,
 })
 
 var GraphiQLHandler, _ = graphiql.NewGraphiqlHandler("/graphql")

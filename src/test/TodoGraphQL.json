@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "a6bc9185-76c1-4dfe-8fdb-622cf79b38c8",
+		"_postman_id": "74f5da7a-8214-4fb1-bca3-a3198dd6e622",
 		"name": "Todo GraphQL",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -13,7 +13,7 @@
 				"body": {
 					"mode": "graphql",
 					"graphql": {
-						"query": "query {\r\n  todos {\r\n    name,\r\n    id,\r\n    description,\r\n    done\r\n  }\r\n}\r\n",
+						"query": "query {\r\n  todos {\r\n\t  id\r\n\t  name,\r\n\t  description,\r\n\t  done,\r\n\t  subTasks{\r\n\t\t  name\r\n\t\t  description\r\n\t}\r\n  }\r\n}\r\n",
 						"variables": ""
 					}
 				},
@@ -49,8 +49,8 @@
 				"body": {
 					"mode": "graphql",
 					"graphql": {
-						"query": "mutation {\n    createTodo (\n        name: \"Created todo\",\n        description: \"Created todo desc\"\n    )\n}",
-						"variables": "{\n    \"name\": \"Create todo\",\n    \"description\": \"Create todo\"\n}"
+						"query": "mutation {\n    createTodo (\n        name: \"New todo with subtasks\",\n        description: \"New todo with subtasks\",\n\t\tsubTasks: [\n\t\t\t{\n\t\t\t\tname: \"First sub task\",\n\t\t\t\tdescription: \"First sub task\"\n\t\t\t},\n\t\t\t{\n\t\t\t\tname: \"Second sub task\",\n\t\t\t\tdescription: \"Second sub task\"\n\t\t\t},\n\t\t\t{\n\t\t\t\tname: \"Third sub task\",\n\t\t\t\tdescription: \"Third sub task\"\n\t\t\t}\n\t\t]\n    )\n}",
+						"variables": ""
 					}
 				},
 				"url": {
@@ -85,7 +85,7 @@
 				"body": {
 					"mode": "graphql",
 					"graphql": {
-						"query": "mutation {\n    updateTodo (\n        id: \"3920b364-b41f-11eb-8fb5-1e00ea3e1d7a\"\n        name: \"Updated todo\",\n        description: \"Updated todo desc\"\n    )\n}",
+						"query": "mutation {\n    updateTodo (\n\t\tid: \"8de4e706-2804-4d4f-8bc1-0953f91cdb9a\"\n\t\tdescription: \"Updated todo\",\n\t\tdone: true,\n\t\tname: \"Updated todo\",\n\t\tsubTasks: [\n\t\t\t{\n\t\t\t\tdescription: \"This should be only task\",\n\t\t\t\tname: \"This should be only task\"\n\t\t\t}\n\t\t]\n    )\n}",
 						"variables": ""
 					}
 				},
@@ -121,7 +121,7 @@
 				"body": {
 					"mode": "graphql",
 					"graphql": {
-						"query": "mutation {\n    deleteTodo (\n        id: \"3d8e4324-b41c-11eb-a2a3-1e00ea3e1d5a\"\n    )\n}",
+						"query": "mutation {\n    deleteTodo (\n        id: \"5dce0caa-8197-4d07-955f-8d31c03637cb\"\n    )\n}",
 						"variables": ""
 					}
 				},
@@ -145,8 +145,32 @@
 				"body": {
 					"mode": "graphql",
 					"graphql": {
-						"query": "query todo ($id: String!) {\r\n    todo (id: $id) {\r\n        name\r\n        description\r\n        done\r\n    }\r\n}",
-						"variables": "{\n    \"id\": \"13f39998-b41b-11eb-bfa5-1e00ea3e1d7a\"\n}"
+						"query": "query todo {\r\n    todo (id: \"8de4e706-2804-4d4f-8bc1-0953f91cdb9a\") {\r\n        name\r\n        description\r\n        done\r\n\t\tsubTasks {\r\n\t\t\tname\r\n\t\t\tdescription\r\n\t\t}\r\n    }\r\n}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "{{HOST_URL}}/graphql",
+					"host": [
+						"{{HOST_URL}}"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GraphQL - Get Done Todos",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query todo {\r\n    getDone {\r\n        name\r\n        description\r\n        subTasks {\r\n\t\t\tname\r\n\t\t\tdescription\r\n\t\t}\r\n    }\r\n}",
+						"variables": ""
 					}
 				},
 				"url": {

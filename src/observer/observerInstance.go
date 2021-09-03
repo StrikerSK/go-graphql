@@ -1,7 +1,7 @@
 package observer
 
 import (
-	"github.com/strikersk/go-graphql/src"
+	"github.com/strikersk/go-graphql/src/service"
 	"log"
 	"sync"
 )
@@ -23,10 +23,10 @@ func GetObserverInstance() *CustomObserver {
 			tempInstance := CustomObserver{}
 
 			//Set TodoService also as main service for observer
-			tempInstance.Register(&src.TodoService{})
-			tempInstance.SetMainService(src.ServiceName)
+			tempInstance.Register(&service.TodoService{})
+			tempInstance.SetMainService(service.ServiceName)
 
-			tempInstance.Register(&src.LoggingTodoService{})
+			tempInstance.Register(&service.LoggingTodoService{})
 
 			log.Println("Observer initialization: created")
 			observerInstance = &tempInstance

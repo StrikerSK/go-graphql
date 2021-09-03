@@ -1,15 +1,16 @@
-package src
+package service
 
 import (
 	"errors"
 	"github.com/google/uuid"
+	"github.com/strikersk/go-graphql/src/types"
 	"log"
 )
 
 const ServiceName = "TodoService"
 
 type TodoService struct {
-	todos []Todo
+	todos []types.Todo
 }
 
 func (t *TodoService) GetName() string {
@@ -31,7 +32,7 @@ func (t *TodoService) FindByID(todoID interface{}) (interface{}, error) {
 }
 
 func (t *TodoService) CreateData(input interface{}) error {
-	todo, ok := input.(Todo)
+	todo, ok := input.(types.Todo)
 	if !ok {
 		return errors.New("input is not of type Todo")
 	}
@@ -45,7 +46,7 @@ func (t *TodoService) CreateData(input interface{}) error {
 }
 
 func (t *TodoService) UpdateData(input interface{}) error {
-	todo, ok := input.(Todo)
+	todo, ok := input.(types.Todo)
 	if !ok {
 		return errors.New("interface is not of type Todo")
 	}
@@ -57,12 +58,12 @@ func (t *TodoService) UpdateData(input interface{}) error {
 		return err
 	}
 
-	t.todos[todoIndex] = input.(Todo)
+	t.todos[todoIndex] = input.(types.Todo)
 	return nil
 }
 
 func (t *TodoService) DeleteData(input interface{}) error {
-	var filteredTodos []Todo
+	var filteredTodos []types.Todo
 
 	for _, item := range t.todos {
 		if item.Id != input {
