@@ -99,7 +99,7 @@ var rootMutation = graphql.NewObject(graphql.ObjectConfig{
 //GraphQL's object for inputting nested structure
 var subTaskObject = graphql.NewInputObject(
 	graphql.InputObjectConfig{
-		Name: "subTasks",
+		Name: "Sub Tasks",
 		Fields: graphql.InputObjectConfigFieldMap{
 			"name": &graphql.InputObjectFieldConfig{
 				Type: graphql.String,

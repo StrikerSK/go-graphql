@@ -1,6 +1,7 @@
 package graphql
 
 import (
+	"errors"
 	"github.com/graphql-go/graphql"
 	"github.com/strikersk/go-graphql/src/observer"
 	"github.com/strikersk/go-graphql/src/types"
@@ -10,8 +11,7 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 	Name: "query",
 	Fields: graphql.Fields{
 		"todos": &graphql.Field{
-			Type:        graphql.NewList(todoField),
-			Description: "Read all todos",
+			Type: graphql.NewList(todoField),
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 				todos, err := observer.GetObserverInstance().FindAll()
 				if err != nil {
@@ -20,6 +20,7 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 
 				return todos, nil
 			},
+			Description: "Read all todos",
 		},
 		"todo": &graphql.Field{
 			Type:        todoField,
@@ -31,11 +32,15 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 			},
 			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 				todoId, success := params.Args["id"].(string)
-				todo, _ := observer.GetObserverInstance().FindByID(todoId)
 				if success {
+					return nil, errors.New("cannot parse id value")
+				}
+
+				if todo, err := observer.GetObserverInstance().FindByID(todoId); err != nil {
+					return nil, err
+				} else {
 					return todo, nil
 				}
-				return todo, nil
 			},
 		},
 		"getDone": &graphql.Field{
@@ -65,10 +70,14 @@ var rootQuery = graphql.NewObject(graphql.ObjectConfig{
 //Need to define field
 var todoField = graphql.NewObject(
 	graphql.ObjectConfig{
-		Name: "Todo",
+		Name: "todo",
 		Fields: graphql.Fields{
 			"id": &graphql.Field{
 				Type: graphql.String,
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					todo := p.Source.(types.Todo)
+					return todo.Id, nil
+				},
 			},
 			"name": &graphql.Field{
 				Type: graphql.String,
@@ -78,6 +87,7 @@ var todoField = graphql.NewObject(
 				},
 			},
 			"description": &graphql.Field{
+				Name: "description",
 				Type: graphql.String,
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					todo := p.Source.(types.Todo)
@@ -89,10 +99,16 @@ var todoField = graphql.NewObject(
 					graphql.ObjectConfig{
 						Name: "subTasks",
 						Fields: graphql.Fields{
+							"done": &graphql.Field{
+								Type: graphql.Boolean,
+							},
 							"name": &graphql.Field{
 								Type: graphql.String,
 							},
 							"description": &graphql.Field{
+								Type: graphql.String,
+							},
+							"id": &graphql.Field{
 								Type: graphql.String,
 							},
 						},
@@ -101,6 +117,10 @@ var todoField = graphql.NewObject(
 			},
 			"done": &graphql.Field{
 				Type: graphql.Boolean,
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					todo := p.Source.(types.Todo)
+					return todo.Done, nil
+				},
 			},
 		},
 	},

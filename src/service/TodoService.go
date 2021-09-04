@@ -41,6 +41,10 @@ func (t *TodoService) CreateData(input interface{}) error {
 		todo.Id = uuid.NewString()
 	}
 
+	for index := range todo.SubTasks {
+		todo.SubTasks[index].GenerateID()
+	}
+
 	t.todos = append(t.todos, todo)
 	return nil
 }
