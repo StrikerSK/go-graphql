@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/StrikerSK/go-graphql/src/graphql"
 	_ "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
-	"github.com/strikersk/go-graphql/src/graphql"
 	"log"
 	"os"
 

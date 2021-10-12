@@ -2,8 +2,8 @@ package service
 
 import (
 	"errors"
+	"github.com/StrikerSK/go-graphql/src/types"
 	"github.com/google/uuid"
-	"github.com/strikersk/go-graphql/src/types"
 	"log"
 )
 

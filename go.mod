@@ -1,4 +1,4 @@
-module github.com/strikersk/go-graphql
+module github.com/StrikerSK/go-graphql
 
 go 1.16
 

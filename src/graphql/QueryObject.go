@@ -2,9 +2,9 @@ package graphql
 
 import (
 	"errors"
+	"github.com/StrikerSK/go-graphql/src/observer"
+	"github.com/StrikerSK/go-graphql/src/types"
 	"github.com/graphql-go/graphql"
-	"github.com/strikersk/go-graphql/src/observer"
-	"github.com/strikersk/go-graphql/src/types"
 )
 
 var rootQuery = graphql.NewObject(graphql.ObjectConfig{

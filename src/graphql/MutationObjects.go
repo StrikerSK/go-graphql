@@ -1,11 +1,11 @@
 package graphql
 
 import (
+	"github.com/StrikerSK/go-graphql/src/observer"
+	"github.com/StrikerSK/go-graphql/src/types"
 	"github.com/google/uuid"
 	"github.com/graphql-go/graphql"
 	"github.com/mitchellh/mapstructure"
-	"github.com/strikersk/go-graphql/src/observer"
-	"github.com/strikersk/go-graphql/src/types"
 	"log"
 )
 

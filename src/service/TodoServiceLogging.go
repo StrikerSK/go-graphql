@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/strikersk/go-graphql/src/types"
+	"github.com/StrikerSK/go-graphql/src/types"
 	"log"
 )
 

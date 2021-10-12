@@ -1,7 +1,7 @@
 package observer
 
 import (
-	"github.com/strikersk/go-graphql/src/service"
+	"github.com/StrikerSK/go-graphql/src/service"
 	"log"
 	"sync"
 )
